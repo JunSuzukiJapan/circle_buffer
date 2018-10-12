@@ -1,0 +1,101 @@
+#[derive(Debug)]
+pub struct SizedQueue<T: Clone> {
+    size: usize,
+    vec: Vec<T>,
+    cur_start: usize,
+}
+
+impl<T> SizedQueue<T> where T: Clone {
+    pub fn new(size: usize) -> SizedQueue<T> {
+        SizedQueue {
+            size: size,
+            vec: Vec::with_capacity(size * 2),
+            cur_start: 0,
+        }
+    }
+
+    pub fn push(&mut self, value: T){
+        if self.vec.len() < self.size {
+            self.vec.push(value);
+
+        } else if self.vec.len() < self.size * 2 {
+            let v = value.clone();
+            self.vec.push(value);
+
+            if self.cur_start > 0 {
+                self.vec[self.cur_start - 1] = v;
+            }
+
+            self.cur_start += 1;
+
+        } else {
+            let v = value.clone();
+
+            let index = self.cur_start + self.size;
+            if index < self.size * 2 {
+                self.vec[index] = value;
+            }
+
+            if self.cur_start > 0 {
+                self.vec[self.cur_start - 1] = v;
+            }
+
+            self.cur_start += 1;
+            if self.cur_start > self.size {
+                self.cur_start = 0;
+            }
+        }
+    }
+
+    pub fn as_slice(&self) -> &[T] {
+        if self.vec.len() < self.size {
+            self.vec.as_slice()
+        }else{
+            &self.vec.as_slice()[self.cur_start..self.cur_start + self.size]
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sized_queue() {
+        let mut queue = SizedQueue::new(3);
+        queue.push(1);
+        assert_eq!(&[1], queue.as_slice());
+        queue.push(2);
+        assert_eq!(&[1, 2], queue.as_slice());
+        queue.push(3);
+        assert_eq!(&[1, 2, 3], queue.as_slice());
+        queue.push(4);
+        assert_eq!(&[2, 3, 4], queue.as_slice());
+        queue.push(5);
+        assert_eq!(&[3, 4, 5], queue.as_slice());
+        queue.push(6);
+        assert_eq!(&[4, 5, 6], queue.as_slice());
+        queue.push(7);
+        assert_eq!(&[5, 6, 7], queue.as_slice());
+        queue.push(8);
+        assert_eq!(&[6, 7, 8], queue.as_slice());
+        queue.push(9);
+        assert_eq!(&[7, 8, 9], queue.as_slice());
+        queue.push(10);
+        assert_eq!(&[8, 9, 10], queue.as_slice());
+        queue.push(11);
+        assert_eq!(&[9, 10, 11], queue.as_slice());
+        queue.push(12);
+        assert_eq!(&[10, 11, 12], queue.as_slice());
+        queue.push(13);
+        assert_eq!(&[11, 12, 13], queue.as_slice());
+        queue.push(14);
+        assert_eq!(&[12, 13, 14], queue.as_slice());
+        queue.push(15);
+        assert_eq!(&[13, 14, 15], queue.as_slice());
+        queue.push(16);
+        assert_eq!(&[14, 15, 16], queue.as_slice());
+        queue.push(17);
+        assert_eq!(&[15, 16, 17], queue.as_slice());
+    }
+}
