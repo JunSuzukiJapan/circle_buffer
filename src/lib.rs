@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-#[derive(Debug)]
+/// A circular buffer.
 pub struct CircleBuffer<T> where T: Clone {
     capacity: usize,
     vec: Vec<T>,
@@ -8,6 +8,15 @@ pub struct CircleBuffer<T> where T: Clone {
 }
 
 impl<T> CircleBuffer<T> where T: Clone {
+    /// Creates a new empty `CircleBuffer<T>` with capacity.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use circle_buffer::CircleBuffer;
+    ///
+    /// let mut cbuf: CircleBuffer<i32> = CircleBuffer::with_capacity(3);
+    /// ```
     pub fn with_capacity(capacity: usize) -> CircleBuffer<T> {
         CircleBuffer {
             capacity: capacity,
@@ -16,10 +25,34 @@ impl<T> CircleBuffer<T> where T: Clone {
         }
     }
 
+    /// Returns the capacity of the buffer.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use circle_buffer::CircleBuffer;
+    ///
+    /// let mut cbuf: CircleBuffer<i32> = CircleBuffer::with_capacity(3);
+    /// assert_eq!(3, cbuf.capacity());
+    /// ```
     pub fn capacity(&self) -> usize {
         self.capacity
     }
 
+    /// Returns the current number of elements in the buffer.
+    ///
+    /// # Examples
+    /// 
+    /// ```
+    /// use circle_buffer::CircleBuffer;
+    ///
+    /// let mut cbuf: CircleBuffer<i32> = CircleBuffer::with_capacity(10);
+    /// cbuf.push(1);
+    /// cbuf.push(1);
+    /// cbuf.push(1);
+    ///
+    /// assert_eq!(cbuf.len(), 3);
+    /// ```
     pub fn len(&self) -> usize {
         let len = self.vec.len();
         if len > self.capacity {
@@ -29,10 +62,49 @@ impl<T> CircleBuffer<T> where T: Clone {
         }
     }
 
+    /// Returns true if the buffer contains no elements.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use circle_buffer::CircleBuffer;
+    ///
+    /// let mut cbuf: CircleBuffer<i32> = CircleBuffer::with_capacity(3);
+    /// assert!(cbuf.is_empty());
+    ///
+    /// cbuf.push(1);
+    /// assert!(!cbuf.is_empty())
+    /// ```
     pub fn is_empty(&self) -> bool {
         self.vec.len() == 0
     }
 
+    /// Pushes a new element into the buffer.
+    /// Once the capacity is reached, pushing new items will overwrite old ones.
+    ///
+    /// # Examples
+    /// 
+    /// ```
+    /// use circle_buffer::CircleBuffer;
+    ///
+    /// let mut cbuf: CircleBuffer<i32> = CircleBuffer::with_capacity(3);
+    /// cbuf.push(1);
+    /// cbuf.push(2);
+    /// cbuf.push(3);
+    /// cbuf.push(4);
+    ///
+    /// assert_eq!(cbuf.len(), 3);
+    ///
+    /// assert_eq!(cbuf[0], 2);
+    /// assert_eq!(cbuf[1], 3);
+    /// assert_eq!(cbuf[2], 4);
+    ///
+    /// let mut sum = 0;
+    /// for x in cbuf.as_slice() {
+    ///     sum += x;
+    /// }
+    /// assert_eq!(sum, 9);
+    /// ```
     pub fn push(&mut self, value: T){
         if self.vec.len() < self.capacity {
             self.vec.push(value);
@@ -61,6 +133,7 @@ impl<T> CircleBuffer<T> where T: Clone {
         }
     }
 
+    /// Extracts a slice containing the entire buffer.
     pub fn as_slice(&self) -> &[T] {
         if self.vec.len() < self.capacity {
             self.vec.as_slice()
@@ -69,6 +142,7 @@ impl<T> CircleBuffer<T> where T: Clone {
         }
     }
 
+    /// Extracts a mutable slice of the entire buffer.
     pub fn as_mut_slice(&mut self) -> &mut [T] {
         if self.vec.len() < self.capacity {
             self.vec.as_mut_slice()
