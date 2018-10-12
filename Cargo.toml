@@ -1,5 +1,5 @@
 [package]
-name = "sized_queue"
+name = "circle_buffer"
 version = "0.1.0"
 authors = ["JunSuzukiJapan <jun.suzuki.japan@gmail.com>"]
 
