@@ -1,11 +1,11 @@
 #[derive(Debug)]
-pub struct CircleArray<T> where T: Clone + std::fmt::Debug {
+pub struct CircleArray<T> where T: Clone {
     size: usize,
     vec: Vec<T>,
     cur_start: usize,
 }
 
-impl<T> CircleArray<T> where T: Clone + std::fmt::Debug {
+impl<T> CircleArray<T> where T: Clone {
     pub fn new(size: usize) -> CircleArray<T> {
         CircleArray {
             size: size,
