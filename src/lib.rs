@@ -1,13 +1,13 @@
 #[derive(Debug)]
-pub struct CircleArray<T> where T: Clone {
+pub struct CircleBuffer<T> where T: Clone {
     size: usize,
     vec: Vec<T>,
     cur_start: usize,
 }
 
-impl<T> CircleArray<T> where T: Clone {
-    pub fn new(size: usize) -> CircleArray<T> {
-        CircleArray {
+impl<T> CircleBuffer<T> where T: Clone {
+    pub fn new(size: usize) -> CircleBuffer<T> {
+        CircleBuffer {
             size: size,
             vec: Vec::with_capacity(size * 2 - 1),
             cur_start: 0,
@@ -64,8 +64,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_sized_queue() {
-        let mut queue = CircleArray::new(3);
+    fn test_circle_buffer() {
+        let mut queue = CircleBuffer::new(3);
         queue.push(1);
         assert_eq!(&[1], queue.as_slice());
         queue.push(2);
