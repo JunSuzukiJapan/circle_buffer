@@ -6,10 +6,10 @@ pub struct CircleBuffer<T> where T: Clone {
 }
 
 impl<T> CircleBuffer<T> where T: Clone {
-    pub fn new(size: usize) -> CircleBuffer<T> {
+    pub fn with_capacity(capacity: usize) -> CircleBuffer<T> {
         CircleBuffer {
-            size: size,
-            vec: Vec::with_capacity(size * 2 - 1),
+            size: capacity,
+            vec: Vec::with_capacity(capacity * 2 - 1),
             cur_start: 0,
         }
     }
@@ -65,7 +65,7 @@ mod tests {
 
     #[test]
     fn test_circle_buffer() {
-        let mut queue = CircleBuffer::new(3);
+        let mut queue = CircleBuffer::with_capacity(3);
         queue.push(1);
         assert_eq!(&[1], queue.as_slice());
         queue.push(2);
