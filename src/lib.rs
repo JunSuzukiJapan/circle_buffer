@@ -49,6 +49,14 @@ impl<T> CircleArray<T> where T: Clone + std::fmt::Debug {
             &self.vec.as_slice()[self.cur_start..self.cur_start + self.size]
         }
     }
+
+    pub fn as_mut_slice(&mut self) -> &mut [T] {
+        if self.vec.len() < self.size {
+            self.vec.as_mut_slice()
+        }else{
+            &mut self.vec.as_mut_slice()[self.cur_start..self.cur_start + self.size]
+        }
+    }
 }
 
 #[cfg(test)]
