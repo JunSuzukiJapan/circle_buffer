@@ -1,15 +1,15 @@
 #[derive(Debug)]
-pub struct SizedQueue<T: Clone> {
+pub struct CircleArray<T> where T: Clone + std::fmt::Debug {
     size: usize,
     vec: Vec<T>,
     cur_start: usize,
 }
 
-impl<T> SizedQueue<T> where T: Clone {
-    pub fn new(size: usize) -> SizedQueue<T> {
-        SizedQueue {
+impl<T> CircleArray<T> where T: Clone + std::fmt::Debug {
+    pub fn new(size: usize) -> CircleArray<T> {
+        CircleArray {
             size: size,
-            vec: Vec::with_capacity(size * 2),
+            vec: Vec::with_capacity(size * 2 - 1),
             cur_start: 0,
         }
     }
@@ -18,13 +18,10 @@ impl<T> SizedQueue<T> where T: Clone {
         if self.vec.len() < self.size {
             self.vec.push(value);
 
-        } else if self.vec.len() < self.size * 2 {
+        } else if self.vec.len() < self.size * 2 - 1 {
             let v = value.clone();
             self.vec.push(value);
-
-            if self.cur_start > 0 {
-                self.vec[self.cur_start - 1] = v;
-            }
+            self.vec[self.cur_start] = v;
 
             self.cur_start += 1;
 
@@ -32,16 +29,14 @@ impl<T> SizedQueue<T> where T: Clone {
             let v = value.clone();
 
             let index = self.cur_start + self.size;
-            if index < self.size * 2 {
+            if index < self.size * 2 - 1 {
                 self.vec[index] = value;
             }
 
-            if self.cur_start > 0 {
-                self.vec[self.cur_start - 1] = v;
-            }
+            self.vec[self.cur_start] = v;
 
             self.cur_start += 1;
-            if self.cur_start > self.size {
+            if self.cur_start >= self.size {
                 self.cur_start = 0;
             }
         }
@@ -62,7 +57,7 @@ mod tests {
 
     #[test]
     fn test_sized_queue() {
-        let mut queue = SizedQueue::new(3);
+        let mut queue = CircleArray::new(3);
         queue.push(1);
         assert_eq!(&[1], queue.as_slice());
         queue.push(2);
