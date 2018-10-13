@@ -1,4 +1,5 @@
 use std::ops::{Index, IndexMut};
+use std::slice::{Iter, IterMut};
 
 /// A circular buffer.
 pub struct CircleBuffer<T> where T: Clone {
@@ -150,6 +151,59 @@ impl<T> CircleBuffer<T> where T: Clone {
             &mut self.vec.as_mut_slice()[self.cur_start..self.cur_start + self.capacity]
         }
     }
+
+    /// Returns an iterator over the buffer's contents.
+    /// The iterator goes from the most recently pushed items to the oldest ones.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use circle_buffer::CircleBuffer;
+    ///
+    /// let mut buffer = CircleBuffer::with_capacity(3);
+    /// buffer.push(1);
+    /// buffer.push(2);
+    /// buffer.push(3);
+    /// let add1: Vec<i32> = buffer.iter().map(|x| x + 1).collect();
+    /// assert_eq!(add1, vec![2, 3, 4]);
+    ///
+    /// buffer.push(4);
+    /// buffer.push(5);
+    /// let add2: Vec<i32> = buffer.iter().map(|x| x + 2).collect();
+    /// assert_eq!(add2, vec![5, 6, 7]);
+    /// ```
+    pub fn iter(&self) -> Iter<T> {
+        self.vec[self.cur_start..self.cur_start + self.len()].iter()
+    }
+
+    /// Returns a mutable iterator over the buffer's contents.
+    /// The iterator goes from the most recently pushed items to the oldest ones.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use circle_buffer::CircleBuffer;
+    ///
+    /// let mut buffer = CircleBuffer::with_capacity(3);
+    /// buffer.push(1);
+    /// buffer.push(2);
+    /// buffer.push(3);
+    /// for x in buffer.iter_mut() {
+    ///     *x += 1;
+    /// }
+    /// assert_eq!(buffer.as_slice(), &[2, 3, 4]);
+    ///
+    /// buffer.push(4);
+    /// buffer.push(5);
+    /// for x in buffer.iter_mut() {
+    ///     *x += 2;
+    /// }
+    /// assert_eq!(buffer.as_slice(), &[6, 6, 7]);
+    /// ```
+    pub fn iter_mut(&mut self) -> IterMut<T> {
+        let end_index = self.cur_start + self.len();
+        self.vec[self.cur_start..end_index].iter_mut()
+    }
 }
 
 impl<T> Index<usize> for CircleBuffer<T> where T: Clone {
@@ -294,5 +348,39 @@ mod tests {
         assert_eq!(1, buffer[0]);
         assert_eq!(3, buffer[1]);
         assert_eq!(4, buffer[2]);
+    }
+
+    #[test]
+    fn test_iter() {
+        let mut buffer = CircleBuffer::with_capacity(3);
+        buffer.push(1);
+        buffer.push(2);
+        buffer.push(3);
+        let add1: Vec<i32> = buffer.iter().map(|x| x + 1).collect();
+        assert_eq!(add1, vec![2, 3, 4]);
+
+        buffer.push(4);
+        buffer.push(5);
+        let add2: Vec<i32> = buffer.iter().map(|x| x + 2).collect();
+        assert_eq!(add2, vec![5, 6, 7]);
+    }
+
+    #[test]
+    fn test_iter_mut() {
+        let mut buffer = CircleBuffer::with_capacity(3);
+        buffer.push(1);
+        buffer.push(2);
+        buffer.push(3);
+        for x in buffer.iter_mut() {
+            *x += 1;
+        }
+        assert_eq!(buffer.as_slice(), &[2, 3, 4]);
+
+        buffer.push(4);
+        buffer.push(5);
+        for x in buffer.iter_mut() {
+            *x += 2;
+        }
+        assert_eq!(buffer.as_slice(), &[6, 6, 7]);
     }
 }
