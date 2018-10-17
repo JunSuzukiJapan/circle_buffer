@@ -1,5 +1,8 @@
+extern crate num;
+
 use std::ops::{Index, IndexMut};
 use std::slice::{Iter, IterMut};
+use num::Zero;
 
 /// A circular buffer.
 pub struct CircleBuffer<T> where T: Clone {
@@ -203,6 +206,24 @@ impl<T> CircleBuffer<T> where T: Clone {
     pub fn iter_mut(&mut self) -> IterMut<T> {
         let end_index = self.cur_start + self.len();
         self.vec[self.cur_start..end_index].iter_mut()
+    }
+}
+
+impl<T> CircleBuffer<T> where T: Clone + Zero {
+    /// Fill all elements with zeros.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use circle_buffer::CircleBuffer;
+    ///
+    /// let mut cbuf: CircleBuffer<i32> = CircleBuffer::with_capacity(3);
+    /// cbuf.zero_clear();
+    /// assert!(cbuf.len() == 3);
+    /// assert_eq!(cbuf.as_slice(), &[0, 0, 0]);
+    /// ```
+    pub fn zero_clear(&mut self){
+        self.vec = vec![T::zero(); self.capacity * 2 - 1];
     }
 }
 
