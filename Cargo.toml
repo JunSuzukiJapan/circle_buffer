@@ -1,6 +1,6 @@
 [package]
 name = "circle_buffer"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["JunSuzukiJapan <jun.suzuki.japan@gmail.com>"]
 repository = "https://github.com/JunSuzukiJapan/circle_buffer"
 keywords = ["buffer", "circle", "circular"]
