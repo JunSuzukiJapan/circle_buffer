@@ -9,4 +9,4 @@ readme = "README.md"
 description = "A simple circular buffer."
 
 [dependencies]
-num = "*"
+num = "0.2.0"
